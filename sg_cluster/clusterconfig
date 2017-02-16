@@ -1,0 +1,85 @@
+################################################################################
+# This is Serviceguard for Linux Cluster Configuration file for Heat Stack. 
+# The parameters in this file need to be updated appropriately before invoking 
+# sgcluster.bash script.
+################################################################################
+#
+#                           CONFIGURABLE PARAMETERS
+#
+################################################################################
+
+# Specify the Details of the Serviceguard Quorum Server that is reachable over 
+# the network with the cluster nodes being deployed. 
+#
+# SG_QS_SERVER: This parameter is used to specify the name of the Quorum Server
+# SG_QS_SERVER_FQDN: This parameter is used to specify the Fully Qualified domain
+# name of the Quorum Server. 
+# SG_QS_IP_ADDRESS: This parameter corresponds to the IP address of the Quorum Server.
+# Example: 
+# SG_QS_SERVER=sgqs;
+# SG_QS_SERVER_FQDN=sgqs.openstacklocal;
+# SG_QS_IP_ADDRESS=10.0.0.93;
+
+SG_QS_SERVER=sgqs;
+SG_QS_SERVER_FQDN=sgqs.openstacklocal;
+SG_QS_IP_ADDRESS=10.0.0.93;
+
+# SG_FLAVOR_NAME: Specify the Flavor that needs to be used for Provision the 
+# Cluster Nodes. Ensure that the flavor name is available and exists in HPE  
+# Helion Open stack as an available flavor.
+# Example: SG_FLAVOR_NAME=m1.medium;
+SG_FLAVOR_NAME=m1.medium;
+
+# SG_NETWORK_ID: Specify the ID of the network that would be configured for this 
+# instance. This would be the common network that will be used between Quorum 
+# Server and Cluster node instances. The list of all networks available 
+# can be obtained through the command line interface from the node hosting the 
+# cloud services with the help of command, "neutron net-list".
+# This network will be used for heartbeat communication among the cluster nodes.
+# Example: SG_NETWORK_ID=19b86af4-0583-4d85-a958-edabd3b3d9fc;
+SG_NETWORK_ID=19b86af4-0583-4d85-a958-edabd3b3d9fc;
+
+# SGLX_PRODUCT_NAME: Specify the name of the Serviceguard for Linux ISO Image that 
+# has been uploaded to glance image repository. Refer to the Readme to get to 
+# know the details on how to upload and retrieve the image details.
+# Example: SGLX_PRODUCT_NAME=SGLX;
+SGLX_PRODUCT_NAME=SGLX;
+
+# SGLX_PRODUCT_ID: Refers to the Unique ID for the Serviceguard for Linux ISO 
+# Image that has been uploaded to glance image repository.
+# Example: SGLX_PRODUCT_ID=15eb9737-bfd2-4f06-8166-724d8ee8c759;
+SGLX_PRODUCT_ID=15eb9737-bfd2-4f06-8166-724d8ee8c759;
+
+# SG_KEY_NAME: Refers to the key pair that provides SSH access to the 
+# Nova Compute instance. The list of all key pairs can be obtained by running 
+# the command "nova keypair-list".
+# Example: SG_KEY_PAIR_NAME=vs_key;
+SG_KEY_NAME=vs_key;
+
+# AUTH_USERNAME, AUTH_PASSWORD: Specify the authenticated username and password 
+# that allows one to access the cloud environment.
+# Example: AUTH_USERNAME=admin;
+# AUTH_PASSWORD=password;
+AUTH_USERNAME=admin;
+AUTH_PASSWORD=password;
+
+# AUTH_TOKEN: Corresponds to the ID of the tenant who is being validated as an 
+# authenticated user. ID can be obtained through the command line interface on 
+# the node hosting the cloud services by issuing the command, 
+# "keystone tenant-list" and then selecting the ID of the admin, who has 
+# access to all the services hosted in the cloud environment.
+# Example: AUTH_TOKEN=6a04c954d82446348aa73b76a3129c8a;
+AUTH_TOKEN=6a04c954d82446348aa73b76a3129c8a;
+
+# AUTH_URL: Value of "AUTH_URL" is the url of the OpenStack service api endpoint 
+# and can be obtained by issuing the command "keystone endpoint-list"
+# Example: AUTH_URL=http://10.10.1.32:5000/v2.0;
+AUTH_URL=http://10.10.1.32:5000/v2.0;
+
+# INSTANCE_PASSWORD: Specify the root password for the Virtual Machine instance.
+# that allows one to access the spawned virtual machine.
+# Example: INSTANCE_PASSWORD=cloudmap;
+# INSTANCE_PASSWORD=cloudmap;
+INSTANCE_PASSWORD=cloudmap;
+
+################################################################################

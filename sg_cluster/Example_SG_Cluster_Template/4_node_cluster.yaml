@@ -1,0 +1,204 @@
+heat_template_version: 2013-05-23
+
+description: Serviceguard on Linux Cluster Template
+
+parameters:
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for Serviceguard Node instance
+    default: Rhel6
+  key:
+    type: string
+    description: Name of keypair to assign to servers
+    default: vs_key
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used
+    default: m1.medium
+  private_network:
+    type: string
+    label: Private network name or ID
+    description: Network to attach instance to.
+    default: 19b86af4-0583-4d85-a958-edabd3b3d9fc
+
+resources:
+  cloud1:
+    type: OS::Nova::Server
+    properties:
+      name: sginstance1
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - network: { get_param: private_network }
+      user_data: |
+          #!/bin/sh
+          cd /root
+          glance --os-username admin --os-password password --os-tenant-id 6a04c954d82446348aa73b76a3129c8a --os-auth-url http://10.10.1.32:5000/v2.0 image-download --file ./SGLX 15eb9737-bfd2-4f06-8166-724d8ee8c759
+          mkdir  serviceguard
+          sleep 2
+          chmod 700 /root/.ssh
+          sleep 2
+          if [[ $UID -ne 0 ]]; then
+             echo "You must be a root user" 2>&1
+             exit 1
+          else
+             mount -o loop SGLX /root/serviceguard
+             sleep 2
+             /root/serviceguard/cmeasyinstall -n `hostname` -j /opt/jetty -a -l -d /root/serviceguard
+             sleep 3
+          fi
+          sleep 6
+          echo "`ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | sed s/addr://``hostname`.openstacklocal `hostname -s`" >> /etc/hosts 
+          service network restart
+          sleep 30
+      user_data_format: RAW
+
+  cloud2:
+    type: OS::Nova::Server
+    properties:
+      name: sginstance2
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - network: { get_param: private_network }
+      user_data: |
+          #!/bin/sh
+          cd /root
+          glance --os-username admin --os-password password --os-tenant-id 6a04c954d82446348aa73b76a3129c8a --os-auth-url http://10.10.1.32:5000/v2.0 image-download --file ./SGLX 15eb9737-bfd2-4f06-8166-724d8ee8c759
+          mkdir  serviceguard
+          sleep 2
+          chmod 700 /root/.ssh
+          sleep 2
+          if [[ $UID -ne 0 ]]; then
+             echo "You must be a root user" 2>&1
+             exit 1
+          else
+             mount -o loop SGLX /root/serviceguard
+             sleep 2
+             /root/serviceguard/cmeasyinstall -n `hostname` -j /opt/jetty -a -l -d /root/serviceguard
+             sleep 3
+          fi
+          sleep 6
+          echo "`ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | sed s/addr://``hostname`.openstacklocal `hostname -s`" >> /etc/hosts 
+          service network restart
+          sleep 30
+      user_data_format: RAW
+
+  cloud3:
+    type: OS::Nova::Server
+    properties:
+      name: sginstance3
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - network: { get_param: private_network }
+      user_data: |
+          #!/bin/sh
+          cd /root
+          glance --os-username admin --os-password password --os-tenant-id 6a04c954d82446348aa73b76a3129c8a --os-auth-url http://10.10.1.32:5000/v2.0 image-download --file ./SGLX 15eb9737-bfd2-4f06-8166-724d8ee8c759
+          mkdir  serviceguard
+          sleep 2
+          chmod 700 /root/.ssh
+          sleep 2
+          if [[ $UID -ne 0 ]]; then
+             echo "You must be a root user" 2>&1
+             exit 1
+          else
+             mount -o loop SGLX /root/serviceguard
+             sleep 2
+             /root/serviceguard/cmeasyinstall -n `hostname` -j /opt/jetty -a -l -d /root/serviceguard
+             sleep 3
+          fi
+          sleep 6
+          echo "`ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | sed s/addr://``hostname`.openstacklocal `hostname -s`" >> /etc/hosts 
+          service network restart
+          sleep 30
+      user_data_format: RAW
+
+  cloud4:
+    type: OS::Nova::Server
+    depends_on: [ cloud1 ,cloud2 ,cloud3 ]
+    properties:
+      name: sginstance4
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - network: { get_param: private_network }
+      user_data: 
+        str_replace: 
+           template: | 
+              #!/bin/sh
+              cd /root
+              glance --os-username admin --os-password password --os-tenant-id 6a04c954d82446348aa73b76a3129c8a --os-auth-url http://10.10.1.32:5000/v2.0 image-download --file ./SGLX 15eb9737-bfd2-4f06-8166-724d8ee8c759
+              mkdir  serviceguard
+              sleep 2
+              chmod 700 /root/.ssh
+              sleep 2
+              if [[ $UID -ne 0 ]]; then
+                 echo "You must be a root user" 2>&1
+                 exit 1
+              else
+                 mount -o loop SGLX /root/serviceguard
+                 sleep 2
+                 /root/serviceguard/cmeasyinstall -n `hostname` -j /opt/jetty -a -l -d /root/serviceguard
+                 sleep 3
+              fi
+              sleep 6
+              echo "`ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | sed s/addr://` `hostname`.openstacklocal `hostname -s`" >> /etc/hosts 
+              echo 10.0.0.93 sgqs.openstacklocal sgqs >> /etc/hosts
+              echo 'instance1-ip_address sginstance1.openstacklocal sginstance1' >> /etc/hosts
+              echo 'instance2-ip_address sginstance2.openstacklocal sginstance2' >> /etc/hosts
+              echo 'instance3-ip_address sginstance3.openstacklocal sginstance3' >> /etc/hosts
+              service network restart
+              sleep 20
+              curl -k -T /etc/hosts -u root:cloudmap scp://root@instance1-ip_address/etc/hosts
+              sleep 40
+              curl -k -T /etc/hosts -u root:cloudmap scp://root@instance2-ip_address/etc/hosts
+              sleep 40
+              curl -k -T /etc/hosts -u root:cloudmap scp://root@instance3-ip_address/etc/hosts
+              sleep 40
+              ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+              sleep 40
+              curl -k -T /root/.ssh/id_rsa.pub -u root:cloudmap scp://root@instance1-ip_address/root/.ssh/authorized_keys2
+              sleep 40
+              curl -k -T /root/.ssh/id_rsa.pub -u root:cloudmap scp://root@instance2-ip_address/root/.ssh/authorized_keys2
+              sleep 40
+              curl -k -T /root/.ssh/id_rsa.pub -u root:cloudmap scp://root@instance3-ip_address/root/.ssh/authorized_keys2
+              sleep 40
+              sh -lic 'cmdeploycl -n `hostname`  -n sginstance1 -n sginstance2 -n sginstance3 -q sgqs'
+              sleep 70
+           params:
+             instance1-ip_address: { get_attr: [cloud1,networks,private,1] }
+             instance2-ip_address: { get_attr: [cloud2,networks,private,1] }
+             instance3-ip_address: { get_attr: [cloud3,networks,private,1] }
+outputs:
+  instance_name1:
+    description: Name of the instance
+    value: { get_attr: [cloud1, name] }
+  instance_ip1:
+    description: IP address of the instance
+    value: { get_attr: [cloud1,networks,private,1] }
+  instance_name2:
+    description: Name of the instance
+    value: { get_attr: [cloud2, name] }
+  instance_ip2:
+    description: IP address of the instance
+    value: { get_attr: [cloud2,networks,private,1] }
+  instance_name3:
+    description: Name of the instance
+    value: { get_attr: [cloud3, name] }
+  instance_ip3:
+    description: IP address of the instance
+    value: { get_attr: [cloud3,networks,private,1] }
+  instance_name4:
+    description: Name of the instance
+    value: { get_attr: [cloud4, name] }
+  instance_ip4:
+    description: IP address of the instance
+    value: { get_attr: [cloud4,networks,private,1] }

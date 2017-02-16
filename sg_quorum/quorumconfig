@@ -1,0 +1,77 @@
+################################################################################
+# This is Serviceguard for Linux Quorum Server Configuration file. 
+# The parameters in this file need to be updated appropriately before invoking 
+# quorum.bash script.
+################################################################################
+#
+#                          CONFIGURABLE PARAMETERS
+#
+################################################################################
+
+# QS_FLAVOR_NAME: Specify the Flavor that needs to be used for Provision the 
+# Quorum Server. Ensure that the flavor name is available and exists in HPE  
+# Helion Open stack as an available flavor.
+# Example: QS_FLAVOR_NAME=m1.medium;
+QS_FLAVOR_NAME=m1.medium;
+
+# QUORUMSERVER_NAME: This parameter is used to specify the name of the 
+# Quorum Server Instance
+QUORUMSERVER_NAME=sgqs;
+
+# STACK_NAME: Specify the name of the stack. This is an optional Parameter if 
+# not specified the QUORUMSERVER_NAME will be used for STACK_NAME as well.
+# Example: STACK_NAME=$QUORUMSERVER_NAME;
+STACK_NAME=$QUORUMSERVER_NAME;
+
+# QS_NETWORK_ID: Specify the ID of the network that would be configured for this 
+# instance. This would be the common network that will be used between Quorum 
+# Server and Cluster node instances. The list of all networks available 
+# can be obtained through the command line interface from the node hosting the 
+# cloud services with the help of command, "neutron net-list".
+# Example: QS_NETWORK_ID=19b86af4-0583-4d85-a958-edabd3b3d9fc;
+QS_NETWORK_ID=19b86af4-0583-4d85-a958-edabd3b3d9fc;
+
+# QS_IMAGE_NAME: Specify the Operating System Image Name, the name of the image
+# should match with the name as displayed in the list of images in glance.
+# Specify an operating system image name for Red Hat Enterprise Linux 6.
+# Example: QS_IMAGE_NAME=Rhel6;
+QS_IMAGE_NAME=Rhel6;
+
+# SGLX_PRODUCT_NAME: Specify the name of the Serviceguard for Linux ISO Image that 
+# has been uploaded to glance image repository. Refer to the Readme to get to 
+# know the details on how to upload and retrieve the image details.
+# Example: SGLX_PRODUCT_NAME=SGLX;
+SGLX_PRODUCT_NAME=SGLX;
+
+# SGLX_PRODUCT_ID: Refers to the Unique ID for the Serviceguard for Linux ISO 
+# Image that has been uploaded to glance image repository.
+# Example: SGLX_PRODUCT_ID=15eb9737-bfd2-4f06-8166-724d8ee8c759;
+SGLX_PRODUCT_ID=15eb9737-bfd2-4f06-8166-724d8ee8c759;
+
+# QS_KEY_PAIR_NAME: Refers to the key pair that provides SSH access to the 
+# Nova Compute instance. The list of all key pairs can be obtained by running 
+# the command "nova keypair-list".
+# Example: QS_KEY_PAIR_NAME=vs_key;
+QS_KEY_PAIR_NAME=vs_key;
+
+# AUTH_USERNAME, AUTH_PASSWORD: Specify the authenticated username and password 
+# that allows one to access the cloud environment.
+# Example: AUTH_USERNAME=admin;
+# AUTH_PASSWORD=password;
+AUTH_USERNAME=admin;
+AUTH_PASSWORD=password;
+
+# AUTH_TOKEN: Corresponds to the ID of the tenant who is been validates as an 
+# authenticated user. ID can be obtained through the command line interface on 
+# the node hosting the cloud services by issuing the command, 
+# "keystone tenant-list" and then selecting the ID of the admin, who has 
+# access to all the services hosted in the cloud environment.
+# Example: AUTH_TOKEN=6a04c954d82446348aa73b76a3129c8a;
+AUTH_TOKEN=6a04c954d82446348aa73b76a3129c8a;
+
+# AUTH_URL: Value of "AUTH_URL" is the url of the OpenStack service api endpoint 
+# and can be obtained by issuing the command "keystone endpoint-list"
+# Example: AUTH_URL=http://10.10.1.32:5000/v2.0;
+AUTH_URL=http://10.10.1.32:5000/v2.0;
+
+################################################################################

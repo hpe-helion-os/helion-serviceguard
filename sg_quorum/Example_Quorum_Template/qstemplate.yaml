@@ -1,0 +1,75 @@
+heat_template_version: 2013-05-23
+
+description: Serviceguard on Linux Quorum Server Template
+
+parameters:
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for Quorum Server instance
+    default: Rhel6
+  key:
+    type: string
+    description: Name of keypair to assign to servers
+    default: vs_key
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used
+    default: m1.medium
+  private_network:
+    type: string
+    label: Private network name or ID
+    description: Network to attach instance to.
+    default: 19b86af4-0583-4d85-a958-edabd3b3d9fc
+
+resources:
+  cloud1:
+    type: OS::Nova::Server
+    properties:
+      name: sgqs
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - network: { get_param: private_network }
+      user_data: |
+          #!/bin/sh
+          cd /root
+          glance --os-username admin --os-password password --os-tenant-id 6a04c954d82446348aa73b76a3129c8a --os-auth-url http://10.10.1.32:5000/v2.0 image-download --file ./SGLX 15eb9737-bfd2-4f06-8166-724d8ee8c759
+          mkdir  serviceguard
+          sleep 2
+          chmod 700 /root/.ssh
+          sleep 2
+          if [[ $UID -ne 0 ]]; then
+             echo "You must be a root user" 2>&1
+             exit 1
+          else
+             mount -o loop SGLX /root/serviceguard
+             sleep 2
+          fi
+          sleep 6
+          rpm -ivh /root/serviceguard/RedHat/RedHat6/QuorumServer/x86_64/serviceguard-qs-A.12.00.00-0.rhel6.x86_64.rpm
+          echo " + + " >> /usr/local/qs/conf/qs_authfile
+          iptables --flush
+          iptables -F
+          iptables -A INPUT -i eth0 -p tcp --dport 1238 -m state --state NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0 -p tcp --sport 1238 -m state --state ESTABLISHED -j ACCEPT
+          iptables -A INPUT -i eth0 -p udp --dport 1238 -m state --state NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0 -p udp --sport 1238 -m state --state ESTABLISHED -j ACCEPT
+          sleep 4
+          /usr/local/qs/bin/qs
+          echo "`ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | sed s/addr://` `hostname`.openstacklocal `hostname -s`" >> /etc/hosts 
+          service network restart
+          sleep 30
+          /usr/local/qs/bin/qs
+          sleep 2
+      user_data_format: RAW
+
+outputs:
+  instance_name1:
+    description: Name of the Quorum Server instance
+    value: { get_attr: [cloud1, name] }
+  instance_ip1:
+    description: IP address of the instance
+    value: { get_attr: [cloud1,networks,private,1] }
